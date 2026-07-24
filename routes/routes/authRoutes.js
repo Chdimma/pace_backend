@@ -57,16 +57,19 @@ router.post('/api/auth/signup', handleRegistration);
 
 // 2. LOGIN: Web2 Email/Username + Password
 router.post('/api/auth/login', async (req, res) => {
-  const { loginIdentifier, password } = req.body; // Can be email or username
+  const { loginIdentifier, email, phoneNumber, password } = req.body; // Accept multiple field names
 
-  if (!loginIdentifier || !password) {
+  // Support both 'loginIdentifier' and 'email'/'phoneNumber' field names
+  const identifier = loginIdentifier || email || phoneNumber;
+
+  if (!identifier || !password) {
     return res.status(400).json({ error: "Please provide credentials and password." });
   }
 
   try {
     // Find user matching either email or username
     const user = await sql`
-      SELECT * FROM users WHERE email = ${loginIdentifier} OR username = ${loginIdentifier}
+      SELECT * FROM users WHERE email = ${identifier} OR username = ${identifier}
     `;
 
     if (user.length === 0) {
