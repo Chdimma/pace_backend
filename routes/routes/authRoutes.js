@@ -146,4 +146,44 @@ router.post('/api/auth/solana-login', async (req, res) => {
   }
 });
 
+// 4. DELETE ACCOUNT: Permanently remove user and all related data
+router.delete('/api/auth/delete-account', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: "Authentication required." });
+  }
+
+  try {
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    // Delete related records first (order matters for foreign keys)
+    await sql`DELETE FROM posture_events WHERE user_id = ${userId}`;
+    await sql`DELETE FROM metrics WHERE user_id = ${userId}`;
+    
+    // Delete the user
+    const deleted = await sql`
+      DELETE FROM users WHERE id = ${userId}
+      RETURNING id, email, username;
+    `;
+
+    if (deleted.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Account ${deleted[0].username} (${deleted[0].email}) permanently deleted.`
+    });
+
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: "Invalid or expired token." });
+    }
+    console.error("Delete account error:", error);
+    return res.status(500).json({ error: "Failed to delete account." });
+  }
+});
+
 module.exports = router;
