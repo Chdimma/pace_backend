@@ -160,7 +160,8 @@ router.delete('/api/auth/delete-account', async (req, res) => {
 
     // Delete related records first (order matters for foreign keys)
     await sql`DELETE FROM posture_events WHERE user_id = ${userId}`;
-    await sql`DELETE FROM metrics WHERE user_id = ${userId}`;
+    // Clean up any other tables that may contain user data (skip if table doesn't exist)
+    try { await sql`DELETE FROM metrics WHERE user_id = ${userId}`; } catch (_) { /* table may not exist */ }
     
     // Delete the user
     const deleted = await sql`
