@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 const sql = require('../../db');
 const { generateNewCustodialWallet } = require('../../services/walletService'); // Your wallet service
 
-// 1. REGISTER: Web2 Email/Phone + Password
-router.post('/api/auth/register', async (req, res) => {
+// Shared registration handler
+async function handleRegistration(req, res) {
   const { name, username, email, phoneNumber, password } = req.body;
 
   if (!password || !name || !username || !email) {
@@ -49,7 +49,11 @@ router.post('/api/auth/register', async (req, res) => {
     console.error("Registration error:", error);
     return res.status(500).json({ error: "Failed to complete registration." });
   }
-});
+}
+
+// 1. REGISTER: Web2 Email/Phone + Password (supports both /register and /signup)
+router.post('/api/auth/register', handleRegistration);
+router.post('/api/auth/signup', handleRegistration);
 
 // 2. LOGIN: Web2 Email/Username + Password
 router.post('/api/auth/login', async (req, res) => {
