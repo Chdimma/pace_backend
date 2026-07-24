@@ -15,6 +15,7 @@ const mqttclient = require('./pace_contract/src/config/mqttclient'); // Path to 
 const solanaHealthRoutes = require('./routes/routes/solanaHealth');
 const alertaRoutes = require('./routes/routes/alertaRoutes');
 const authRoutes = require('./routes/routes/authRoutes'); // 1. Import Auth Module
+const stretchRoutes = require('./routes/routes/stretchRoutes'); // Stretch timer routes
 
 // ==========================================
 // 3. EXPRESS APP INITIALIZATION & MIDDLEWARE
@@ -29,6 +30,7 @@ app.use(express.json()); // Parses incoming JSON payloads
 app.use(solanaHealthRoutes); // Connects /api/posture-event, /api/health-records/:walletAddress, etc.
 app.use(alertaRoutes);       // Connects your Alerta reminder and notification logic
 app.use(authRoutes); // 3. Mount Web2/Web3 Unified Auth router
+app.use(stretchRoutes); // 4. Mount Stretch timer routes
 
 // ==========================================
 // 5. LEGACY / CORE ENDPOINTS
