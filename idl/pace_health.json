@@ -1,0 +1,94 @@
+{
+  "version": "0.1.0",
+  "name": "pace_health",
+  "programId": "TokenkegQfeZyiNwAJsyFbPVwwQQfg5bgPbZvEeGu1J",
+  "instructions": [
+    {
+      "name": "logHealthEvent",
+      "accounts": [
+        {
+          "name": "userLedger",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "eventType",
+          "type": "u8"
+        },
+        {
+          "name": "postureScore",
+          "type": "u8"
+        },
+        {
+          "name": "durationSecs",
+          "type": "u32"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "UserLedger",
+      "fields": [
+        {
+          "name": "authority",
+          "type": "publicKey"
+        },
+        {
+          "name": "user",
+          "type": "publicKey"
+        },
+        {
+          "name": "history",
+          "type": {
+            "vec": {
+              "defined": "HealthEvent"
+            }
+          }
+        },
+        {
+          "name": "eventCount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "HealthEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "eventType",
+            "type": "u8"
+          },
+          {
+            "name": "postureScore",
+            "type": "u8"
+          },
+          {
+            "name": "durationSecs",
+            "type": "u32"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
