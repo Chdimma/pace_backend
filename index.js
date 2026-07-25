@@ -21,7 +21,35 @@ const stretchRoutes = require('./routes/routes/stretchRoutes'); // Stretch timer
 // 3. EXPRESS APP INITIALIZATION & MIDDLEWARE
 // ==========================================
 const app = express();
-app.use(cors());
+
+// Configure CORS to allow requests from the Vercel frontend and local development
+const allowedOrigins = [
+  'https://pace-fawn.vercel.app',
+  'https://pace-backend-delta.vercel.app',
+  'http://localhost:5000',
+  'http://localhost:3000',
+  'http://127.0.0.1:5000',
+  'http://127.0.0.1:3000',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all origins in production for now
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+}));
+
+// Handle preflight OPTIONS requests explicitly
+app.options('*', cors());
+
 app.use(express.json()); // Parses incoming JSON payloads
 
 // ==========================================
