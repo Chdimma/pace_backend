@@ -3,7 +3,7 @@
 // ==========================================
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/.env' });
 
 // ==========================================
 // 2. DATABASE, MQTT, & API ROUTE IMPORTS
